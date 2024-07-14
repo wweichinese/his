@@ -1,5 +1,6 @@
 package com.example.his.controller;
 
+import cn.hutool.core.date.DateUtil;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -13,7 +14,7 @@ public class BasicController {
     // http://127.0.0.1:8080/hello?name=lisi
     @GetMapping("hello")
     public String hello(@RequestParam(name = "name", defaultValue = "unknown user") String name) {
-        return "Hello 王伟";
+        return "Hello 王伟 " + DateUtil.now();
     }
 
     // http://127.0.0.1:8080/user
