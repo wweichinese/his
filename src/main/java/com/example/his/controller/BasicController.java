@@ -41,7 +41,7 @@ public class BasicController {
     @ModelAttribute
     public void parseUser(@RequestParam(name = "name", defaultValue = "unknown user") String name
             , @RequestParam(name = "age", defaultValue = "12") Integer age, User user) {
-        user.setName("zhangsan");
+        user.setName("王伟111");
         user.setAge(18);
     }
 }
