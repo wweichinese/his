@@ -1,6 +1,7 @@
 package com.example.his.controller;
 
 import cn.hutool.core.date.DateUtil;
+import com.example.his.entity.User;
 import org.springframework.web.bind.annotation.*;
 
 /**
