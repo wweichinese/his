@@ -14,7 +14,7 @@ public class LoginController {
 
     @PostMapping("/login")
     //取出前端post提交的用户名，密码，并进行SpringSecurity 的登录验证
-    public String login(@RequestParam("userName") String userName, @RequestParam("password") String password) {
+    public String login(@RequestBody User user) {
         return "success";
     }
 

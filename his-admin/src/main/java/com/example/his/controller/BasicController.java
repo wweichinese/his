@@ -22,7 +22,7 @@ public class BasicController {
     @RequestMapping("/user")
     public User user() {
         User user = new User();
-        user.setName("theonefx");
+        user.setUserName("theonefx");
         user.setAge(666);
         return user;
     }
@@ -31,7 +31,7 @@ public class BasicController {
     @RequestMapping("/save_user")
 
     public String saveUser(User u) {
-        return "user will save: name=" + u.getName() + ", age=" + u.getAge();
+        return "user will save: name=" + u.getUserName() + ", age=" + u.getAge();
     }
 
     // http://127.0.0.1:8080/html
@@ -43,7 +43,7 @@ public class BasicController {
     @ModelAttribute
     public void parseUser(@RequestParam(name = "name", defaultValue = "unknown user") String name
             , @RequestParam(name = "age", defaultValue = "12") Integer age, User user) {
-        user.setName("王伟111");
+        user.setUserName("王伟111");
         user.setAge(18);
     }
 }

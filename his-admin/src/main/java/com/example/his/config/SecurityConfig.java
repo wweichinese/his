@@ -22,7 +22,7 @@ public class SecurityConfig {
         http.csrf().disable()
                 .cors().and()
                 .authorizeRequests((requests) -> requests
-                        .antMatchers("/api/open/**").permitAll() // 允许访问 /open 路径下的请求
+                        .antMatchers("/api/open/**","/api/v1/login").permitAll() // 允许访问 /open 路径下的请求
                         .anyRequest().authenticated()) // 其他请求需要认证
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                         .authenticationEntryPoint(authenticationEntryPoint())); // 使用表单登录
