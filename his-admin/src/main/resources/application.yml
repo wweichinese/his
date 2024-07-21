@@ -2,13 +2,23 @@
 server:
   port: 8080
 
-
 spring:
   security:
     user:
       name: admin
       password: admin
+  datasource:
+    url: jdbc:mysql://localhost:3306/ruoyi?characterEncoding=utf-8&serverTimezone=UTC
+    username: root
+    password: 111111
+    driver-class-name: com.mysql.cj.jdbc.Driver
   banner:
     location: /banner.txt
+
+
+mybatis-plus:
+  mapper-locations: classpath*:/his-admin/mapper/**/*.xml
+
+
 
 

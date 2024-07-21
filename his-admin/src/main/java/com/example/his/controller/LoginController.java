@@ -1,7 +1,16 @@
 package com.example.his.controller;
 
 import com.example.his.entity.User;
-import org.springframework.web.bind.annotation.*;
+import com.example.his.service.interfaces.LoginService;
+import com.example.his.util.ResponseResult;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
 
 /**
  * @author 王伟
@@ -12,10 +21,15 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class LoginController {
 
+    @Autowired
+    public AuthenticationManager authenticationManager;
+
+    @Autowired
+    public LoginService loginService;
+
     @PostMapping("/login")
-    //取出前端post提交的用户名，密码，并进行SpringSecurity 的登录验证
-    public String login(@RequestBody User user) {
-        return "success";
+    public ResponseResult<Map<String, String>> login(@RequestBody User user) {
+        return loginService.login(user);
     }
 
 }
