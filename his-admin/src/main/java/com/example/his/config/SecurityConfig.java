@@ -3,12 +3,10 @@ package com.example.his.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.*;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  * @author 王伟
@@ -17,37 +15,64 @@ import org.springframework.security.web.authentication.*;
  */
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig {
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    @Autowired
+    private JwtAuthenticationSecurityConfig jwtAuthenticationSecurityConfig;
 
-        http.csrf().disable()
-                .cors().and()
-                .authorizeRequests((requests) -> requests
-                        .antMatchers("/api/v1/login").permitAll() // 允许访问登录接口
-                        .anyRequest().authenticated()) // 其他请求需要认证
-                .formLogin().disable() // 禁用默认的表单登录处理
-                .exceptionHandling(exceptionHandling -> exceptionHandling
-                        .authenticationEntryPoint(authenticationEntryPoint()));
+    @Autowired
+    private EntryPointUnauthorizedHandler entryPointUnauthorizedHandler;
 
-        return http.build();
+    @Autowired
+    private RequestAccessDeniedHandler requestAccessDeniedHandler;
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.formLogin()
+                //禁用表单登录，前后端分离用不上
+                .disable()
+                //应用登录过滤器的配置，配置分离
+                .apply(jwtAuthenticationSecurityConfig)
+                .and()
+                // 设置URL的授权
+                .authorizeRequests()
+                .antMatchers("/login")
+                .permitAll()
+                // anyRequest() 所有请求   authenticated() 必须被认证
+                .anyRequest()
+                .authenticated()
+                //处理异常情况：认证失败和权限不足
+                .and()
+                .exceptionHandling()
+                //认证未通过，不允许访问异常处理器
+                .authenticationEntryPoint(entryPointUnauthorizedHandler)
+                //认证通过，但是没权限处理器
+                .accessDeniedHandler(requestAccessDeniedHandler)
+                .and()
+                //禁用session，JWT校验不需要session
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                //将TOKEN校验过滤器配置到过滤器链中，否则不生效，放到UsernamePasswordAuthenticationFilter之前
+                .addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class)
+                // 关闭csrf
+                .csrf().disable();
     }
-
+    // 自定义的Jwt Token校验过滤器
     @Bean
-    public AuthenticationEntryPoint authenticationEntryPoint() {
-        return new Http403ForbiddenEntryPoint();
+    public TokenAuthenticationFilter authenticationTokenFilterBean() {
+        return new TokenAuthenticationFilter();
     }
-
+    /**
+     * 加密算法
+     *
+     * @return
+     */
     @Bean
-    public AuthenticationFailureHandler authenticationFailureHandler() {
-        SimpleUrlAuthenticationFailureHandler failureHandler = new SimpleUrlAuthenticationFailureHandler();
-        failureHandler.setDefaultFailureUrl("/login?error"); // 设置默认的失败重定向 URL
-        return failureHandler;
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
+    @Override
+    protected AuthenticationManager authenticationManager() throws Exception {
+        return super.authenticationManager();
     }
 }
+
+
+
