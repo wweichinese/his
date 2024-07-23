@@ -29,7 +29,7 @@ public class LoginController {
 
     @PostMapping("/login")
     public ResponseResult<Map<String, String>> login(@RequestBody User user) {
-        return loginService.login(user);
+        return null;
     }
 
 }
