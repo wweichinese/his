@@ -1,22 +1,28 @@
 package com.example.his.util;
 
+import com.alibaba.fastjson2.JSON;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
+
 /**
- * JWT工具类
+ * @author 王伟
  */
+@Component
 public class JwtUtil {
 
-    //有效期为
+    //有效期为1小时
     public static final Long JWT_TTL = 60 * 60 * 1000L;
 
     //设置秘钥明文
@@ -27,39 +33,27 @@ public class JwtUtil {
      *
      * @param subject token中要存放的数据（json格式）
      */
-    public static String createJWT(String subject) {
-        JwtBuilder builder = getJwtBuilder(subject, null, getUuid());
+    public String createJwt(String uuid, String subject) {
+        JwtBuilder builder = getJwtBuilder(uuid, subject);
         return builder.compact();
     }
 
     /**
      * 生成jtw
      *
-     * @param subject   token中要存放的数据（json格式）
-     * @param ttlMillis token超时时间
+     * @param subject token中要存放的数据（json格式）
      */
-    public static String createJWT(String subject, Long ttlMillis) {
-        JwtBuilder builder = getJwtBuilder(subject, ttlMillis, getUuid());
+    public String createJwt(String subject) {
+        JwtBuilder builder = getJwtBuilder(null, subject);
         return builder.compact();
     }
 
-    /**
-     * 生成jtw
-     */
-    public static String createJWT(String id, String subject, Long ttlMillis) {
-        JwtBuilder builder = getJwtBuilder(subject, ttlMillis, id);// 设置过期时间
-        return builder.compact();
-    }
-
-    private static JwtBuilder getJwtBuilder(String subject, Long ttlMillis, String uuid) {
+     private JwtBuilder getJwtBuilder(String uuid, String subject) {
         SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
         SecretKey secretKey = generalKey();
         long nowMillis = System.currentTimeMillis();
         Date now = new Date(nowMillis);
-        if (ttlMillis == null) {
-            ttlMillis = JwtUtil.JWT_TTL;
-        }
-        long expMillis = nowMillis + ttlMillis;
+        long expMillis = nowMillis + JwtUtil.JWT_TTL;
         Date expDate = new Date(expMillis);
         return Jwts.builder()
                 .setId(uuid)           //唯一的ID
@@ -73,7 +67,7 @@ public class JwtUtil {
     /**
      * 解析
      */
-    public static Claims parseJWT(String jwt) {
+    public Claims parseJwt(String jwt) {
         SecretKey secretKey = generalKey();
         return Jwts.parser()
                 .setSigningKey(secretKey)
@@ -98,16 +92,19 @@ public class JwtUtil {
         return new SecretKeySpec(encodedKey, "HmacSHA256");
     }
 
-    public static String getUuid() {
-        return UUID.randomUUID().toString().replaceAll("-", "");
-    }
-
     public static void main(String[] args) {
-        String jwt = createJWT(JWT_KEY);
+        //先创建map，里面放用户名，密码，再通过fastjson转成json格式
+        Map<String, String> map = new HashMap<>();
+        map.put("username", "admin");
+        map.put("password", "123456");
+        String subject = JSON.toJSONString(map);
+        String uuid = UUID.randomUUID().toString();
+
+        /*String jwt = createJwt(uuid, subject);
         System.out.println(jwt);
 
-        Claims claims = parseJWT(jwt);
-        String subject = claims.getSubject();
-        System.out.println(subject);
+        Claims claims = parseJwt(jwt);
+        System.out.println(claims.getId());
+        System.out.println(claims.getSubject());*/
     }
 }

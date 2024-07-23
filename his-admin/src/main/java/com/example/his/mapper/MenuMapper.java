@@ -7,9 +7,9 @@ import org.apache.ibatis.annotations.Mapper;
 import java.util.List;
 
 /**
- * @Author 王伟
- * @Date 2024/7/21 19:42
- * @Desc
+ * @author 王伟
+ * @date 2024/7/21 19:42
+ * @desc
  */
 @Mapper
 public interface MenuMapper extends BaseMapper<Menu> {

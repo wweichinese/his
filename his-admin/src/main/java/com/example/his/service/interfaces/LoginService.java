@@ -1,9 +1,6 @@
 package com.example.his.service.interfaces;
 
-import com.example.his.entity.User;
-import com.example.his.util.ResponseResult;
-
-import java.util.Map;
+import com.example.his.entity.SecurityUser;
 
 /**
  * @author 王伟
@@ -12,7 +9,6 @@ import java.util.Map;
  */
 public interface LoginService {
 
-    ResponseResult<Map<String, String>> login(User user);
+    SecurityUser loadByUsername(String username);
 
-    ResponseResult logout();
 }

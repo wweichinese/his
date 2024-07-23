@@ -1,17 +1,25 @@
 package com.example.his.config;
 
+import com.example.his.filter.TokenAuthenticationFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  * @author 王伟
  * @date 2024/7/16 3:33
- * @desc
+ * @desc 上述仅仅配置了登录过滤器，还需要在全局配置类做一些配置，如下：
+ * 应用登录过滤器的配置
+ * 将登录接口、令牌刷新接口放行，不需要拦截
+ * 配置AuthenticationEntryPoint、AccessDeniedHandler
+ * 禁用session，前后端分离+JWT方式不需要session
+ * 将token校验过滤器TokenAuthenticationFilter添加到过滤器链中，放在UsernamePasswordAuthenticationFilter之前。
  */
 @Configuration
 @EnableWebSecurity
@@ -62,11 +70,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public TokenAuthenticationFilter authenticationTokenFilterBean() {
         return new TokenAuthenticationFilter();
     }
-    /**
-     * 加密算法
-     *
-     * @return
-     */
+
+    //加密算法
     @Bean
     @Override
     protected AuthenticationManager authenticationManager() throws Exception {
