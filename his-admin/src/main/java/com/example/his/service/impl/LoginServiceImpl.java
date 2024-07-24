@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -23,9 +23,6 @@ import java.util.Objects;
  */
 @Service
 public class LoginServiceImpl implements LoginService {
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     @Autowired
     UserService userService;
@@ -42,7 +39,8 @@ public class LoginServiceImpl implements LoginService {
             SecurityUser securityUser = new SecurityUser();
             securityUser.setUsername(username);
             //todo 此处为了方便，直接在数据库存储的明文，实际生产中应该存储密文，则这里不用再次加密
-            securityUser.setPassword(passwordEncoder.encode(user.getPassword()));
+            //securityUser.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+            securityUser.setPassword(user.getPassword());
             //todo 查询该用户的角色
             //List<String> userRoles = roleService.selectAllByUsername(username);
 
@@ -55,5 +53,9 @@ public class LoginServiceImpl implements LoginService {
             return securityUser;
         }
         return null;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(new BCryptPasswordEncoder().encode("admin"));
     }
 }

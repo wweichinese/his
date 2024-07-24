@@ -30,8 +30,8 @@ public class LoginAuthenticationFailureHandler implements AuthenticationFailureH
         //TODO 根据项目需要返回指定异常提示,这里演示了一个用户名密码错误的异常
         //BadCredentialsException 这个异常一般是用户名或者密码错误
         if (exception instanceof BadCredentialsException) {
-            ResponseUtil.responseResult(response, new ResultMsg(200, "用户名或密码不正确！", null));
+            ResponseUtil.responseResult(response, new ResultMsg(401, "用户名或密码不正确！", null));
         }
-        ResponseUtil.responseResult(response, new ResultMsg(200, "登录失败", null));
+        ResponseUtil.responseResult(response, new ResultMsg(401, "登录失败", null));
     }
 }

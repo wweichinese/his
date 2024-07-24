@@ -1,5 +1,6 @@
 package com.example.his.config;
 
+import com.example.his.filter.JwtAuthenticationLoginFilter;
 import com.example.his.filter.TokenAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -46,7 +47,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 // 设置URL的授权
                 .authorizeRequests()
-                .antMatchers("/login")
+                .antMatchers("/api/v1/login")
                 .permitAll()
                 // anyRequest() 所有请求   authenticated() 必须被认证
                 .anyRequest()
@@ -64,6 +65,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 //将TOKEN校验过滤器配置到过滤器链中，否则不生效，放到UsernamePasswordAuthenticationFilter之前
                 .addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class)
+                // 允许跨域
+                .cors()
+                .and()
                 // 关闭csrf
                 .csrf().disable();
     }

@@ -9,7 +9,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -36,11 +36,6 @@ public class JwtAuthenticationSecurityConfig extends SecurityConfigurerAdapter<D
      */
     @Autowired
     private LoginAuthenticationFailureHandler loginAuthenticationFailureHandler;
-    /**
-     * 加密
-     */
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     /**
      * 将登录接口的过滤器配置到过滤器链中
@@ -50,8 +45,11 @@ public class JwtAuthenticationSecurityConfig extends SecurityConfigurerAdapter<D
      */
     @Override
     public void configure(HttpSecurity http) {
-        JwtAuthenticationLoginFilter filter = new JwtAuthenticationLoginFilter();
-        filter.setAuthenticationManager(http.getSharedObject(AuthenticationManager.class));
+        // 获取 AuthenticationManager
+        AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
+        // 创建 JwtAuthenticationLoginFilter 实例并注入 AuthenticationManager
+        JwtAuthenticationLoginFilter filter = new JwtAuthenticationLoginFilter(authenticationManager);
+
         //认证成功处理器
         filter.setAuthenticationSuccessHandler(loginAuthenticationSuccessHandler);
         //认证失败处理器
@@ -61,7 +59,7 @@ public class JwtAuthenticationSecurityConfig extends SecurityConfigurerAdapter<D
         //设置userDetailService
         provider.setUserDetailsService(userDetailsService);
         //设置加密算法
-        provider.setPasswordEncoder(passwordEncoder);
+        provider.setPasswordEncoder(new BCryptPasswordEncoder());
         http.authenticationProvider(provider);
         //将这个过滤器添加到UsernamePasswordAuthenticationFilter之前执行
         http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);

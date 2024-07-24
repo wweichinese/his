@@ -42,9 +42,9 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     /**
      * UserDetailsService的实现类，从数据库中加载用户详细信息
      */
-    @Qualifier("jwtTokenUserDetailsService")
+    /*@Qualifier("jwtTokenUserDetailsService")
     @Autowired
-    private UserDetailsService userDetailsService;
+    private UserDetailsService userDetailsService;*/
 
     @Autowired
     RedisTemplate redisTemplate;
